@@ -171,6 +171,30 @@ function maybe(source) {
   };
 }
 
+function recurse(depth, fn) {
+  let inner;
+
+  let self = {
+    gen() {
+      if (depth > 0) {
+        inner = inner || recurse(depth - 1, fn);
+        return inner.gen();
+      } else {
+        return NOTHING;
+      }
+    },
+    or(source) {
+      return {
+        gen() {
+          source = (depth > 0) ? self : source;
+          return source.gen();
+        }
+      };
+    }
+  };
+  return fn(self);
+}
+
 module.exports = {
   any,
   weighted,
@@ -182,5 +206,6 @@ module.exports = {
   symbol,
   array,
   object,
-  record
+  record,
+  recurse
 };

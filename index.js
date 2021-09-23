@@ -140,6 +140,17 @@ function object(opts) {
   };
 }
 
+function record(template) {
+  let fields = Object.keys(template).map((key) => [key, wrap(template[key])]);
+
+  return {
+    gen() {
+      let values = fields.map(([key, value]) => [key, value.gen()]);
+      return Object.fromEntries(values);
+    }
+  };
+}
+
 module.exports = {
   any,
   weighted,
@@ -149,5 +160,6 @@ module.exports = {
   unicode,
   symbol,
   array,
-  object
+  object,
+  record
 };

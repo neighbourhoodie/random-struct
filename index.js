@@ -1,5 +1,11 @@
 'use strict';
 
+const LOWER = [...'abcdefghijklmnopqrstuvwxyz'];
+const UPPER = LOWER.map((c) => c.toUpperCase());
+const ALPHA = [...LOWER, ...UPPER];
+const DIGIT = [...'0123456789'];
+const SYMBOL = ['$', '_'];
+
 function range(min, max) {
   let list = [];
   for (let i = min; i <= max; i++) {
@@ -7,6 +13,17 @@ function range(min, max) {
   }
   return list;
 }
+
+function chr(c) {
+  return String.fromCharCode(c);
+}
+
+const ASCII = [0x09, 0x0A, 0x0D, ...range(0x20, 0x7E)].map(chr);
+
+const UNICODE = [
+  ...ASCII,
+  ...[...range(0x0080, 0xD7FF), ...range(0xE000, 0xFFFF)].map(chr)
+];
 
 function pick(list) {
   let index = Math.floor(Math.random() * list.length);
@@ -64,9 +81,47 @@ function int(opts) {
   }
 }
 
+function string(opts, chars) {
+  let length = int(opts);
+
+  return {
+    gen() {
+      let n = length.gen();
+      let str = '';
+      while (n--) {
+        str += pick(chars);
+      }
+      return str;
+    }
+  };
+}
+
+function ascii(opts) {
+  return string(opts, ASCII);
+}
+
+function unicode(opts) {
+  return string(opts, UNICODE);
+}
+
+function symbol(opts) {
+  let { min, max } = intOpts(opts);
+  let first = [...ALPHA, ...SYMBOL];
+  let rest = string({ min: min - 1, max: max - 1 }, [...first, ...DIGIT]);
+
+  return {
+    gen() {
+      return pick(first) + rest.gen();
+    }
+  };
+}
+
 module.exports = {
   any,
   weighted,
   bool,
-  int
+  int,
+  ascii,
+  unicode,
+  symbol
 };

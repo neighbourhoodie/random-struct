@@ -5,6 +5,7 @@ const UPPER = LOWER.map((c) => c.toUpperCase());
 const ALPHA = [...LOWER, ...UPPER];
 const DIGIT = [...'0123456789'];
 const SYMBOL = ['$', '_'];
+const NOTHING = {};
 
 function range(min, max) {
   let list = [];
@@ -43,7 +44,12 @@ function any(sources) {
 
   return {
     gen() {
-      return pick(sources).gen();
+      while (true) {
+        let value = pick(sources).gen();
+        if (value !== NOTHING) {
+          return value;
+        }
+      }
     }
   };
 }
@@ -145,8 +151,22 @@ function record(template) {
 
   return {
     gen() {
-      let values = fields.map(([key, value]) => [key, value.gen()]);
-      return Object.fromEntries(values);
+      let record = {};
+      for (let [key, source] of fields) {
+        let value = source.gen();
+        if (value !== NOTHING) {
+          record[key] = value;
+        }
+      }
+      return record;
+    }
+  };
+}
+
+function maybe(source) {
+  return {
+    gen() {
+      return (Math.random() < 0.5) ? source.gen() : NOTHING;
     }
   };
 }
@@ -154,6 +174,7 @@ function record(template) {
 module.exports = {
   any,
   weighted,
+  maybe,
   bool,
   int,
   ascii,

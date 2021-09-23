@@ -1,0 +1,16 @@
+{
+  "name": "random-struct",
+  "version": "0.0.0",
+  "description": "Generate random objects from composable schemas",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/neighbourhoodie/random-struct.git"
+  },
+  "author": "James Coglan <james@neighbourhood.ie>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/neighbourhoodie/random-struct/issues"
+  },
+  "homepage": "https://github.com/neighbourhoodie/random-struct#readme"
+}

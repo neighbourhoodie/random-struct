@@ -116,6 +116,30 @@ function symbol(opts) {
   };
 }
 
+function array(length, values) {
+  length = int(length);
+  values = wrap(values);
+
+  return {
+    gen() {
+      return range(1, length.gen()).map(() => values.gen());
+    }
+  };
+}
+
+function object(opts) {
+  let width = int(opts.width);
+  let keys = wrap(opts.keys);
+  let values = wrap(opts.values);
+
+  return {
+    gen() {
+      let entries = range(1, width.gen()).map(() => [keys.gen(), values.gen()]);
+      return Object.fromEntries(entries);
+    }
+  };
+}
+
 module.exports = {
   any,
   weighted,
@@ -123,5 +147,7 @@ module.exports = {
   int,
   ascii,
   unicode,
-  symbol
+  symbol,
+  array,
+  object
 };

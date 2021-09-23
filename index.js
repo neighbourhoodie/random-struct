@@ -1,8 +1,39 @@
 'use strict';
 
+function range(min, max) {
+  let list = [];
+  for (let i = min; i <= max; i++) {
+    list.push(i);
+  }
+  return list;
+}
+
 function pick(list) {
   let index = Math.floor(Math.random() * list.length);
   return list[index];
+}
+
+function wrap(source) {
+  if (source && typeof source.gen === 'function') {
+    return source;
+  } else {
+    return { gen: () => source };
+  }
+}
+
+function any(sources) {
+  sources = sources.map((src) => wrap(src));
+
+  return {
+    gen() {
+      return pick(sources).gen();
+    }
+  };
+}
+
+function weighted(sources) {
+  sources = sources.flatMap(([src, n]) => range(1, n).map(() => src));
+  return any(sources);
 }
 
 function bool() {
@@ -34,6 +65,8 @@ function int(opts) {
 }
 
 module.exports = {
+  any,
+  weighted,
   bool,
   int
 };

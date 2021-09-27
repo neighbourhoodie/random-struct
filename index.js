@@ -171,6 +171,19 @@ function maybe(source) {
   };
 }
 
+function filter(source, fn) {
+  return {
+    gen() {
+      while (true) {
+        let value = source.gen();
+        if (fn(value)) {
+          return value;
+        }
+      }
+    }
+  };
+}
+
 function recurse(depth, fn) {
   let inner;
 
@@ -199,6 +212,7 @@ module.exports = {
   any,
   weighted,
   maybe,
+  filter,
   bool,
   int,
   ascii,
